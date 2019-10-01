@@ -1,8 +1,13 @@
-'use strict'
-
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, Menu } from 'electron'
 import * as path from 'path'
+import { remote } from 'electron'
+import { dialog } from 'electron' 
 import { format as formatUrl } from 'url'
+
+import settings from 'electron-settings'
+import ks from 'node-key-sender'
+
+'use strict'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -11,6 +16,49 @@ let mainWindow
 
 function createMainWindow() {
   const window = new BrowserWindow({webPreferences: {nodeIntegration: true}})
+
+
+      // change default menu
+  const menuTemplate = [
+    {
+      label: "Settings",
+      submenu: [
+        {
+          label: 'Set Folder Path',
+          click: () => {
+            // something
+            openFolder();
+          }
+        }
+      ]
+    },
+    {
+      label: "Help",
+      submenu:[
+        {
+          label: "Documentation",
+          click: () =>{
+            // something
+          }
+        },
+        {
+          label: "About",
+          click: () => {
+            // something
+          }
+        },
+        {
+          label: "Open DevTools",
+          click: () => {
+            win.webContents.openDevTools()
+          }
+        }
+      ]
+    }
+  ];
+
+  const menu = Menu.buildFromTemplate(menuTemplate);
+  Menu.setApplicationMenu(menu);
 
   if (isDevelopment) {
     window.webContents.openDevTools()
@@ -60,3 +108,19 @@ app.on('activate', () => {
 app.on('ready', () => {
   mainWindow = createMainWindow()
 })
+
+function openFolder(){
+    dialog.showOpenDialog(mainWindow, 
+      {
+          properties: ['openDirectory']
+      }, 
+        paths => respondWithPath(paths)
+    )
+}
+
+function respondWithPath(paths) {
+    settings.set('kbfolder', {
+      path: paths,
+    });
+    mainWindow.reload();
+}
