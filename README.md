@@ -21,6 +21,7 @@ yarn
 ```
 
 ### Development Scripts
+Based on https://github.com/electron-userland/electron-webpack-quick-start
 
 ```bash
 # run application in development mode
