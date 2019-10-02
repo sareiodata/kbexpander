@@ -3,9 +3,7 @@ import * as path from 'path'
 import { remote } from 'electron'
 import { dialog } from 'electron' 
 import { format as formatUrl } from 'url'
-
 import settings from 'electron-settings'
-import ks from 'node-key-sender'
 
 'use strict'
 
@@ -50,7 +48,7 @@ function createMainWindow() {
         {
           label: "Open DevTools",
           click: () => {
-            win.webContents.openDevTools()
+            window.webContents.openDevTools()
           }
         }
       ]
