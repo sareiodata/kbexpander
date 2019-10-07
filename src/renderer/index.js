@@ -26,18 +26,32 @@ init();
 function init(){
 	$("#app").html(tpl_app);
 
-	jQuery(document).ready(function() {
-		//populate with json data
-		getAllKb(); 
-		console.log("mememememememememmemeem")
+	let rest_url = 'http://wp.local';
+	let rest_path = '/wp-json/wp/v2/kb/';
 
-		// populate with file -> content
+	jQuery(document).ready(function() {
 		let content = ''
+		//populate with json data
+		$.getJSON(rest_url + rest_path + "?_jsonp=?",function(json){
+	  		jQuery(json).each(function(index, kb){
+	  			console.log(kb.title.rendered)
+	  			content += '<div class="kbelement" tabindex="0">'
+				content += '<p class="title">'+ kb.title.rendered +'</p>'
+				content += '<p class="content" data-id="'+ kb.id +'">'+ kb['content-unrendered'] +'</p>'
+				content += '</div>'
+				//console.log(content)
+	  		});
+			jQuery('#lista').append(content)
+
+		});
+
+		console.log(content)
+		// populate with file -> content
 		jQuery.each(walkSync(folderPath), function(index, value){
-			content += '<div class="kbelement" tabindex="0">'
-			content += '<p class="title">'+ value['file'] +'</p>'
-			content += '<p class="content" data-path="'+ value['path'] +'">'+ value['content'] +'</p>'
-			content += '</div>'
+			//content += '<div class="kbelement" tabindex="0">'
+			//content += '<p class="title">'+ value['file'] +'</p>'
+			//content += '<p class="content" data-path="'+ value['path'] +'">'+ value['content'] +'</p>'
+			//content += '</div>'
 		})
 		jQuery('#lista').html(content)
 
@@ -179,7 +193,12 @@ const walkSync = (dir, filelist = []) => {
 
 function getAllKb(){
 	$.getJSON("http://wp.local/wp-json/wp/v2/kb?_jsonp=?",function(json){
-  		console.log(json);
+  		
+  		//console.log(json);
+
+  		jQuery(json).each(function(index, kb){
+  			console.log(kb);
+  		})
 	});
 
 
