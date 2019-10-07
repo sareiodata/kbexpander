@@ -27,6 +27,10 @@ function init(){
 	$("#app").html(tpl_app);
 
 	jQuery(document).ready(function() {
+		//populate with json data
+		getAllKb(); 
+		console.log("mememememememememmemeem")
+
 		// populate with file -> content
 		let content = ''
 		jQuery.each(walkSync(folderPath), function(index, value){
@@ -172,3 +176,24 @@ const walkSync = (dir, filelist = []) => {
   }
   return filelist;
 };
+
+function getAllKb(){
+
+	// https://www.npmjs.com/package/request
+
+	var request = require("request")
+
+	var url = "http://wp.local/wp-json/wp/v2/kb?" +
+    	"key=d99803c970a04223998cabd90a741633" +
+    	"&stop_id=it"
+
+	request({
+	    url: url,
+	    json: true
+	}, function (error, response, body) {
+
+	    if (!error && response.statusCode === 200) {
+	        console.log(body) // Print the json response
+	    }
+	})
+}
