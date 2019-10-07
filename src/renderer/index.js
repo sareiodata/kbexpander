@@ -178,6 +178,11 @@ const walkSync = (dir, filelist = []) => {
 };
 
 function getAllKb(){
+	$.getJSON("http://wp.local/wp-json/wp/v2/kb?_jsonp=?",function(json){
+  		console.log(json);
+	});
+
+
 
 	// https://www.npmjs.com/package/request
 
@@ -193,7 +198,7 @@ function getAllKb(){
 	}, function (error, response, body) {
 
 	    if (!error && response.statusCode === 200) {
-	        console.log(body) // Print the json response
+	        //console.log(body) // Print the json response
 	    }
 	})
 }
