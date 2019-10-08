@@ -165,7 +165,7 @@ function setApiLocation(){
 }
 
 function setNewSnipetLocation(){
-  let current_edit_url = settings.get('kbsnippetapi.edit_url')
+  let current_edit_url = settings.get('kbsnippeteditapi.edit_url')
   if(typeof current_edit_url == 'undefined' || current_edit_url == '' ){
     current_edit_url = 'http://example.org/wp-admin/post-new.php?post_type=kb'
   }
@@ -181,13 +181,13 @@ function setNewSnipetLocation(){
       .then((r) => {
         if(r === null) {
           console.log('user cancelled');
-          settings.set('kbsnippetapi', {
+          settings.set('kbsnippeteditapi', {
             edit_url: '',
           });
           mainWindow.reload();
         } else {
           console.log('result', r);
-          settings.set('kbsnippetapi', {
+          settings.set('kbsnippeteditapi', {
             edit_url: r,
           });
           mainWindow.reload();
