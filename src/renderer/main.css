@@ -74,6 +74,7 @@ input#search{
   margin-bottom: 5px;
   cursor: pointer;
   border-radius: 3px;
+  position:relative;
 }
 
 .kbelement:hover,
@@ -102,6 +103,32 @@ input#search{
 .kbelement:active .title,
 .kbelement:active .content{
   color: #fff;
+}
+
+.kb-snippet-edit{
+  display: none;
+}
+
+.kbelement:hover .kb-snippet-edit,
+.kbelement:focus .kb-snippet-edit{
+  display: inline-block;
+}
+
+.kb-snippet-edit{
+  position: absolute;
+  width: 50px;
+  height: 25px;
+  padding-top: 4px;
+  border-radius: 3px;
+  text-align: center;
+  background: #c1c1c1;
+  color: white;
+  top: 5px;
+  right: 5px;
+}
+.kb-snippet-edit:hover{
+  cursor: pointer;
+  color: #111;
 }
 
 p{

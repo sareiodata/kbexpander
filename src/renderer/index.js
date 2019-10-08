@@ -3,7 +3,7 @@
 
 import jQuery from 'jquery'
 import scollintoview from './helpers/scrollintoview.js'
-import { remote } from 'electron'
+import { remote, clipboard, shell } from 'electron'
 import settings from 'electron-settings'
 import * as path from 'path'
 import fs from 'fs'
@@ -26,20 +26,53 @@ init();
 function init(){
 	$("#app").html(tpl_app);
 
-	jQuery(document).ready(function() {
-		//populate with json data
-		getAllKb(); 
-		console.log("mememememememememmemeem")
+	let rest_url = settings.get('kbsnippetapi.url')
+	if(typeof rest_url == 'undefined' || rest_url == '' ){
+		rest_url = false
+	}
 
+	let content = '';
+
+	jQuery(document).ready(function() {
+
+		$(document).on("click",".kbelement-snippet", function(event){
+			console.log(event.target);
+			if(jQuery(event.target).hasClass('kb-snippet-edit')){
+				let id = jQuery(event.target).attr('data-id')
+				shell.openExternal( settings.get('kbsnippeteditapi.url') + id);          
+			} else {
+				copyPasteSnippet(this)
+			}
+		});
+		$(document).on("click",".kbelement-file",function() {
+			copyPasteFile(this)
+		});
+
+		if(rest_url != false){
+			//populate with json data
+			$.getJSON(rest_url + "?_jsonp=?",function(json){
+				content = '';
+				jQuery(json).each(function(index, kb){
+					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
+					content += '<p class="title">'+ kb['content-categories'] + kb.title.rendered +'</p>';
+					content += '<p class="content" data-id="'+ kb.id +'">'+ kb['content-unrendered'] +'</p>';
+					content += '<span class="kb-snippet-edit" data-id="'+ kb.id +'" >Edit</span>'
+					content += '</div>';
+				});
+				jQuery('#lista').append(content);
+				addScrollClass();
+			});
+		}
+		
 		// populate with file -> content
-		let content = ''
+		content = '';
 		jQuery.each(walkSync(folderPath), function(index, value){
-			content += '<div class="kbelement" tabindex="0">'
+			content += '<div class="kbelement kbelement-file" tabindex="0">'
 			content += '<p class="title">'+ value['file'] +'</p>'
 			content += '<p class="content" data-path="'+ value['path'] +'">'+ value['content'] +'</p>'
 			content += '</div>'
-		})
-		jQuery('#lista').html(content)
+		});
+		jQuery('#lista').append(content);
 
 		//filter
 		jQuery("#search").on("keyup", function () {
@@ -48,7 +81,7 @@ function init(){
 			jQuery("#lista div").show().filter(function () {
 				for (let i = 0; i < value_arr.length ; i++) {
 		    		var maybeHide = jQuery(this).text().toLowerCase().trim().indexOf(value_arr[i]);
-		    		console.log(maybeHide)
+		    		console.log(maybeHide);
 		    		if (maybeHide == -1){
 		      			return maybeHide;
 		    		}
@@ -57,27 +90,11 @@ function init(){
 			addScrollClass()
 		})
 
-		// send text to previous focused app.
-		jQuery( ".kbelement" ).click(function() {
-			var window = remote.getCurrentWindow();
-			window.minimize();
-
-			const ks = require('node-key-sender');
-			var fileContent = fs.readFileSync(jQuery(this).find('.content').attr('data-path'), 'utf8');
-
-			var copy = require('clipboard-copy')
-
-			var successPromise = copy(fileContent)
-			
-			setTimeout(timedSendCombination, 100, ks );
-
-		});
-
 		// initial scroll detect
 		addScrollClass()
 
 		// output folder from settings
-   		jQuery("footer span").text(folderPath)    
+   		jQuery("footer span").text('folder: ' + folderPath + ' & url: ' + rest_url);
 
 	})
 
@@ -104,9 +121,6 @@ function init(){
 
 }
 
-
-
-
 function navigate(origin, sens) {
 	var inputs = jQuery('#lista').find('.kbelement').filter(function() {
 		return jQuery(this).css("display") !== 'none';
@@ -131,11 +145,9 @@ function addScrollClass(){
 function timedSendCombination(ks){
 	ks.sendCombination(['control', 'v']).then(
 	    function(stdout, stderr) {
-	        
 	        window.close();
 	    },        
 	    function(error, stdout, stderr) {
-	        
 	        console.log('ks error: ' + error);
    			//window.close();
 	    }
@@ -177,28 +189,53 @@ const walkSync = (dir, filelist = []) => {
   return filelist;
 };
 
-function getAllKb(){
-	$.getJSON("http://wp.local/wp-json/wp/v2/kb?_jsonp=?",function(json){
-  		console.log(json);
+
+function copyPasteFile(element) {
+	var window = remote.getCurrentWindow();
+	window.minimize();
+	let fileContent = fs.readFileSync(jQuery(element).find('.content').attr('data-path'), 'utf8');
+
+	let promise = new Promise(function(resolve, reject) {
+		// do a thing, possibly async, then…
+		clipboard.writeText(fileContent)
+		if (clipboard.readText() == fileContent) {
+			resolve("Stuff worked!");
+		}
+		else {
+			reject(Error("It broke"));
+		}
 	});
 
+	promise.then(function(data){
+		timedSendCombination(ks);
+	});
+}
 
+function copyPasteSnippet(element) {
+	let rest_url = settings.get('kbsnippetapi.url')
+	if(typeof rest_url == 'undefined' || rest_url == '' ){
+		console.log("No Rest URL defined.")
+		return;
+	}
+	let window = remote.getCurrentWindow();
+	window.minimize();
 
-	// https://www.npmjs.com/package/request
+	let id = jQuery(element).find('.content').attr('data-id')
+	$.getJSON(rest_url + id + "?_jsonp=?",function(json){
+		let content = json['content-unrendered'];
+		let promise = new Promise(function(resolve, reject) {
+			// do a thing, possibly async, then…
+			clipboard.writeText(content);
+			if (clipboard.readText() == content) {
+				resolve("Stuff worked!");
+			}
+			else {
+				reject(Error("It broke"));
+			}
+		});
 
-	var request = require("request")
-
-	var url = "http://wp.local/wp-json/wp/v2/kb?" +
-    	"key=d99803c970a04223998cabd90a741633" +
-    	"&stop_id=it"
-
-	request({
-	    url: url,
-	    json: true
-	}, function (error, response, body) {
-
-	    if (!error && response.statusCode === 200) {
-	        //console.log(body) // Print the json response
-	    }
-	})
+		promise.then(function(data){
+			timedSendCombination(ks);
+		});
+	});
 }
