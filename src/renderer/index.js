@@ -3,7 +3,7 @@
 
 import jQuery from 'jquery'
 import scollintoview from './helpers/scrollintoview.js'
-import { remote, clipboard } from 'electron'
+import { remote, clipboard, shell } from 'electron'
 import settings from 'electron-settings'
 import * as path from 'path'
 import fs from 'fs'
@@ -35,8 +35,14 @@ function init(){
 
 	jQuery(document).ready(function() {
 
-		$(document).on("click",".kbelement-snippet", function(){
-			copyPasteSnippet(this)
+		$(document).on("click",".kbelement-snippet", function(event){
+			console.log(event.target);
+			if(jQuery(event.target).hasClass('kb-snippet-edit')){
+				let id = jQuery(event.target).attr('data-id')
+				shell.openExternal( settings.get('kbsnippeteditapi.url') + id);          
+			} else {
+				copyPasteSnippet(this)
+			}
 		});
 		$(document).on("click",".kbelement-file",function() {
 			copyPasteFile(this)
@@ -50,15 +56,16 @@ function init(){
 					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
 					content += '<p class="title">'+ kb['content-categories'] + kb.title.rendered +'</p>';
 					content += '<p class="content" data-id="'+ kb.id +'">'+ kb['content-unrendered'] +'</p>';
+					content += '<span class="kb-snippet-edit" data-id="'+ kb.id +'" >Edit</span>'
 					content += '</div>';
 				});
 				jQuery('#lista').append(content);
 				addScrollClass();
 			});
 		}
-
-		content = '';
+		
 		// populate with file -> content
+		content = '';
 		jQuery.each(walkSync(folderPath), function(index, value){
 			content += '<div class="kbelement kbelement-file" tabindex="0">'
 			content += '<p class="title">'+ value['file'] +'</p>'

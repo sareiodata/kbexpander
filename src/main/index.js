@@ -25,7 +25,8 @@ function createMainWindow() {
           label: 'Snippet',
           click: () => {
             // something
-            shell.openExternal( settings.get('kbsnippeteditapi.edit_url') );          }
+            shell.openExternal( settings.get('kbsnippetnewapi.new_url') );          
+          }
         }
       ]
     },
@@ -40,7 +41,7 @@ function createMainWindow() {
           }
         },
         {
-          label: 'Set Snippets API',
+          label: 'Set All Snippets URL',
           click: () => {
             // something
             setApiLocation();
@@ -51,6 +52,13 @@ function createMainWindow() {
           click: () => {
             // something
             setNewSnipetLocation();
+          }
+        },
+        {
+          label: 'Set Edit Snippet URL',
+          click: () => {
+            // something
+            setEditSnipetLocation();
           }
         }
       ]
@@ -174,15 +182,47 @@ function setApiLocation(){
 }
 
 function setNewSnipetLocation(){
-  let current_edit_url = settings.get('kbsnippeteditapi.edit_url')
-  if(typeof current_edit_url == 'undefined' || current_edit_url == '' ){
-    current_edit_url = 'http://example.org/wp-admin/post-new.php?post_type=kb'
+  let current_new_url = settings.get('kbsnippetnewapi.new_url')
+  if(typeof current_new_url == 'undefined' || current_new_url == '' ){
+    current_new_url = 'http://example.org/wp-admin/post-new.php?post_type=kb'
   }
 
   prompt({
     title: 'Set Snippets Url',
     label: 'URL:',
-    value: current_edit_url,
+    value: current_new_url,
+    inputAttrs: {
+      type: 'url'
+    }
+  })
+      .then((r) => {
+        if(r === null) {
+          console.log('user cancelled');
+          settings.set('kbsnippetnewapi', {
+            new_url: '',
+          });
+          mainWindow.reload();
+        } else {
+          console.log('result', r);
+          settings.set('kbsnippetnewapi', {
+            new_url: r,
+          });
+          mainWindow.reload();
+        }
+      })
+      .catch(console.error);
+}
+
+function setEditSnipetLocation(){
+  let current_url = settings.get('kbsnippeteditapi.new_url')
+  if(typeof current_url == 'undefined' || current_url == '' ){
+    current_url = 'http://wp.local/wp-admin/post.php?action=edit&post='
+  }
+
+  prompt({
+    title: 'Set Snippets Url',
+    label: 'URL:',
+    value: current_url,
     inputAttrs: {
       type: 'url'
     }
@@ -191,13 +231,13 @@ function setNewSnipetLocation(){
         if(r === null) {
           console.log('user cancelled');
           settings.set('kbsnippeteditapi', {
-            edit_url: '',
+            url: '',
           });
           mainWindow.reload();
         } else {
           console.log('result', r);
           settings.set('kbsnippeteditapi', {
-            edit_url: r,
+            url: r,
           });
           mainWindow.reload();
         }
