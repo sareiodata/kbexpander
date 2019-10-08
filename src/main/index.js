@@ -4,6 +4,8 @@ import { remote } from 'electron'
 import { dialog } from 'electron' 
 import { format as formatUrl } from 'url'
 import settings from 'electron-settings'
+import prompt from 'electron-prompt'
+
 
 'use strict'
 
@@ -13,7 +15,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let mainWindow
 
 function createMainWindow() {
-  const window = new BrowserWindow({webPreferences: {nodeIntegration: true}})
+  const window = new BrowserWindow({webPreferences: {nodeIntegration: true},  width: 1200, height: 600})
 
 
       // change default menu
@@ -26,6 +28,13 @@ function createMainWindow() {
           click: () => {
             // something
             openFolder();
+          }
+        },
+        {
+          label: 'Set Snippets API',
+          click: () => {
+            // something
+            setApiLocation();
           }
         }
       ]
@@ -114,6 +123,38 @@ function openFolder(){
       }, 
         paths => respondWithPath(paths)
     )
+}
+
+function setApiLocation(){
+    var current_url = settings.get('kbsnippetapi.url')
+    if(typeof current_url == 'undefined' || current_url == '' ){
+      current_url = 'http://example.org/wp-json/wp/v2/kb/'
+    }
+
+    prompt({
+      title: 'Set Snippets Url',
+      label: 'URL:',
+      value: current_url,
+      inputAttrs: {
+        type: 'url'
+      }
+    })
+        .then((r) => {
+          if(r === null) {
+            console.log('user cancelled');
+            settings.set('kbsnippetapi', {
+              url: '',
+            });
+            mainWindow.reload();
+          } else {
+            console.log('result', r);
+            settings.set('kbsnippetapi', {
+              url: r,
+            });
+            mainWindow.reload();
+          }
+        })
+        .catch(console.error);
 }
 
 function respondWithPath(paths) {
