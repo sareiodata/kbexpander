@@ -45,6 +45,7 @@ function init(){
 		if(rest_url != false){
 			//populate with json data
 			$.getJSON(rest_url + "?_jsonp=?",function(json){
+				content = '';
 				jQuery(json).each(function(index, kb){
 					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
 					content += '<p class="title">'+ kb['content-categories'] + kb.title.rendered +'</p>';
@@ -56,6 +57,7 @@ function init(){
 			});
 		}
 
+		content = '';
 		// populate with file -> content
 		jQuery.each(walkSync(folderPath), function(index, value){
 			content += '<div class="kbelement kbelement-file" tabindex="0">'

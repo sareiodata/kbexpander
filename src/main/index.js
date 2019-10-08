@@ -1,7 +1,5 @@
-import { app, BrowserWindow, Menu } from 'electron'
-import * as path from 'path'
-import { remote } from 'electron'
-import { dialog } from 'electron' 
+import { app, BrowserWindow, Menu, dialog, shell  } from 'electron'
+import * as path from 'path' 
 import { format as formatUrl } from 'url'
 import settings from 'electron-settings'
 import prompt from 'electron-prompt'
@@ -20,6 +18,17 @@ function createMainWindow() {
 
       // change default menu
   const menuTemplate = [
+    {
+      label: "New",
+      submenu: [
+        {
+          label: 'Snippet',
+          click: () => {
+            // something
+            shell.openExternal( settings.get('kbsnippeteditapi.edit_url') );          }
+        }
+      ]
+    },
     {
       label: "Settings",
       submenu: [
