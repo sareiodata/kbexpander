@@ -112,9 +112,6 @@ function init(){
 
 }
 
-
-
-
 function navigate(origin, sens) {
 	var inputs = jQuery('#lista').find('.kbelement').filter(function() {
 		return jQuery(this).css("display") !== 'none';

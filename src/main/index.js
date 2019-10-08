@@ -36,6 +36,13 @@ function createMainWindow() {
             // something
             setApiLocation();
           }
+        },
+        {
+          label: 'Set New Snippet URL',
+          click: () => {
+            // something
+            setNewSnipetLocation();
+          }
         }
       ]
     },
@@ -155,6 +162,38 @@ function setApiLocation(){
           }
         })
         .catch(console.error);
+}
+
+function setNewSnipetLocation(){
+  let current_edit_url = settings.get('kbsnippetapi.edit_url')
+  if(typeof current_edit_url == 'undefined' || current_edit_url == '' ){
+    current_edit_url = 'http://example.org/wp-admin/post-new.php?post_type=kb'
+  }
+
+  prompt({
+    title: 'Set Snippets Url',
+    label: 'URL:',
+    value: current_edit_url,
+    inputAttrs: {
+      type: 'url'
+    }
+  })
+      .then((r) => {
+        if(r === null) {
+          console.log('user cancelled');
+          settings.set('kbsnippetapi', {
+            edit_url: '',
+          });
+          mainWindow.reload();
+        } else {
+          console.log('result', r);
+          settings.set('kbsnippetapi', {
+            edit_url: r,
+          });
+          mainWindow.reload();
+        }
+      })
+      .catch(console.error);
 }
 
 function respondWithPath(paths) {
