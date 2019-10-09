@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder --win nsis",
+    "dist": "yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
@@ -29,11 +29,25 @@
     "productName": "kbextender",
     "artifactName": "KBextender-${version}.${ext}",
     "appId": "com.cozmoslabs.kbextender",
-    "win": {
-      "target": "nsis"
-    },
     "linux": {
-      "target": "AppImage"
+      "category": "Productivity",
+      "icon": "build/assets/icon/png",
+      "target": [
+        "AppImage"
+      ]
+    },
+    "win": {
+      "icon": "build/assets/icon/win/win.ico",
+      "target": [
+        "nsis",
+        "msi"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "license": "LICENSE",
+      "perMachine": true,
+      "deleteAppDataOnUninstall": true
     }
   }
 }
