@@ -60,6 +60,13 @@ function createMainWindow() {
             // something
             setEditSnipetLocation();
           }
+        },
+        {
+          label: 'Set WP Username',
+          click: () => {
+            // something
+            setWpUsername();
+          }
         }
       ]
     },
@@ -150,7 +157,7 @@ function openFolder(){
 }
 
 function setApiLocation(){
-    var current_url = settings.get('kbsnippetapi.url')
+    let current_url = settings.get('kbsnippetapi.url')
     if(typeof current_url == 'undefined' || current_url == '' ){
       current_url = 'http://example.org/wp-json/wp/v2/kb/'
     }
@@ -188,7 +195,7 @@ function setNewSnipetLocation(){
   }
 
   prompt({
-    title: 'Set Snippets Url',
+    title: 'Set New Snippets Url',
     label: 'URL:',
     value: current_new_url,
     inputAttrs: {
@@ -214,13 +221,13 @@ function setNewSnipetLocation(){
 }
 
 function setEditSnipetLocation(){
-  let current_url = settings.get('kbsnippeteditapi.new_url')
+  let current_url = settings.get('kbsnippeteditapi.url')
   if(typeof current_url == 'undefined' || current_url == '' ){
     current_url = 'http://wp.local/wp-admin/post.php?action=edit&post='
   }
 
   prompt({
-    title: 'Set Snippets Url',
+    title: 'Set Edit Snippet Url',
     label: 'URL:',
     value: current_url,
     inputAttrs: {
@@ -238,6 +245,38 @@ function setEditSnipetLocation(){
           console.log('result', r);
           settings.set('kbsnippeteditapi', {
             url: r,
+          });
+          mainWindow.reload();
+        }
+      })
+      .catch(console.error);
+}
+
+function setWpUsername(){
+  let current_username = settings.get('kbwpuser.username')
+  if(typeof current_username == 'undefined' || current_username == '' ){
+    current_username = 'admin'
+  }
+
+  prompt({
+    title: 'Set WP Username',
+    label: 'Username:',
+    value: current_username,
+    inputAttrs: {
+      type: 'text'
+    }
+  })
+      .then((r) => {
+        if(r === null) {
+          console.log('user cancelled');
+          settings.set('kbwpuser', {
+            username: '',
+          });
+          mainWindow.reload();
+        } else {
+          console.log('result', r);
+          settings.set('kbwpuser', {
+            username: r,
           });
           mainWindow.reload();
         }

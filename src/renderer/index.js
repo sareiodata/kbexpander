@@ -36,13 +36,13 @@ function init(){
 	jQuery(document).ready(function() {
 
 		let username = settings.get('kbsnippetapiauth.user');
-		let password = settings.get('kbsnippetapiauth.password');
-		let auth = "Basic " + btoa(username + ":" + password);
-		$.ajaxSetup({
-			headers : {
-				'Authorization' : auth,
-			}
-		});
+		//let password = settings.get('kbsnippetapiauth.password');
+		//let auth = "Basic " + btoa(username + ":" + password);
+		// $.ajaxSetup({
+		// 	headers : {
+		// 		'Authorization' : auth,
+		// 	}
+		// });
 
 		$(document).on("click",".kbelement-snippet", function(event){
 			console.log(event.target);
@@ -59,7 +59,6 @@ function init(){
 
 		if(rest_url != false){
 			//populate with json data
-			//$.getJSON(rest_url + "?_jsonp=?",function(json){
 			$.getJSON(rest_url ,function(json){
 				content = '';
 				jQuery(json).each(function(index, kb){
