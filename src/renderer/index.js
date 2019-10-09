@@ -35,6 +35,15 @@ function init(){
 
 	jQuery(document).ready(function() {
 
+		let username = settings.get('kbsnippetapiauth.user');
+		let password = settings.get('kbsnippetapiauth.password');
+		let auth = "Basic " + btoa(username + ":" + password);
+		$.ajaxSetup({
+			headers : {
+				'Authorization' : auth,
+			}
+		});
+
 		$(document).on("click",".kbelement-snippet", function(event){
 			console.log(event.target);
 			if(jQuery(event.target).hasClass('kb-snippet-edit')){
@@ -50,7 +59,8 @@ function init(){
 
 		if(rest_url != false){
 			//populate with json data
-			$.getJSON(rest_url + "?_jsonp=?",function(json){
+			//$.getJSON(rest_url + "?_jsonp=?",function(json){
+			$.getJSON(rest_url ,function(json){
 				content = '';
 				jQuery(json).each(function(index, kb){
 					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
@@ -146,7 +156,7 @@ function timedSendCombination(ks){
 	ks.sendCombination(['control', 'v']).then(
 	    function(stdout, stderr) {
 	        window.close();
-	    },        
+	    },
 	    function(error, stdout, stderr) {
 	        console.log('ks error: ' + error);
    			//window.close();
@@ -180,10 +190,10 @@ const walkSync = (dir, filelist = []) => {
     	const fileContent = fs.readFileSync(dirFile, 'utf8')
    		filelist.push({
      		file: dirFile.replace(folderPath+'/', ''),
-     		content: fileContent, 
+     		content: fileContent,
      		path: dirFile
        	});
-    	
+
     }
   }
   return filelist;
@@ -221,7 +231,7 @@ function copyPasteSnippet(element) {
 	window.minimize();
 
 	let id = jQuery(element).find('.content').attr('data-id')
-	$.getJSON(rest_url + id + "?_jsonp=?",function(json){
+	$.getJSON(rest_url + id,function(json){
 		let content = json['content-unrendered'];
 		let promise = new Promise(function(resolve, reject) {
 			// do a thing, possibly async, then…
