@@ -40,14 +40,6 @@ function init(){
 
 	jQuery(document).ready(function() {
 
-		//let password = settings.get('kbsnippetapiauth.password');
-		//let auth = "Basic " + btoa(username + ":" + password);
-		// $.ajaxSetup({
-		// 	headers : {
-		// 		'Authorization' : auth,
-		// 	}
-		// });
-
 		$(document).on("click",".kbelement-snippet", function(event){
 			console.log(event.target);
 			if(jQuery(event.target).hasClass('kb-snippet-edit')){
@@ -63,7 +55,7 @@ function init(){
 
 		if(rest_url != false){
 			//populate with json data
-			$.getJSON(rest_url + '&username=' + username ,function(json){
+			$.getJSON(rest_url + '?username=' + username ,function(json){
 				content = '';
 				jQuery(json).each(function(index, kb){
 					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
@@ -233,7 +225,7 @@ function copyPasteSnippet(element) {
 	window.minimize();
 
 	let id = jQuery(element).find('.content').attr('data-id')
-	$.getJSON(rest_url + id + '&username=' + username,function(json){
+	$.getJSON(rest_url + id + '?username=' + username,function(json){
 		let content = json['content-unrendered'];
 		let promise = new Promise(function(resolve, reject) {
 			// do a thing, possibly async, then…
