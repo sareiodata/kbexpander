@@ -13,6 +13,7 @@ import tpl_app from './tpl_app.html'
 
 
 window.$ = window.jQuery = jQuery
+// global settings
 var kbsettings = settings.get('kbfolder.path')
 if(typeof kbsettings != 'undefined'){
 	var folderPath = settings.get('kbfolder.path')[0]
@@ -20,22 +21,25 @@ if(typeof kbsettings != 'undefined'){
 	var folderPath = false
 }
 
+let rest_url = settings.get('kbsnippetapi.url')
+if(typeof rest_url == 'undefined' || rest_url == '' ){
+	rest_url = false
+}
+
+let username = settings.get('kbwpuser.username')
+if(typeof username == 'undefined' || username == '' ){
+	username = 'NoUserDefined'
+}
 
 init();
 
 function init(){
 	$("#app").html(tpl_app);
 
-	let rest_url = settings.get('kbsnippetapi.url')
-	if(typeof rest_url == 'undefined' || rest_url == '' ){
-		rest_url = false
-	}
-
 	let content = '';
 
 	jQuery(document).ready(function() {
 
-		let username = settings.get('kbsnippetapiauth.user');
 		//let password = settings.get('kbsnippetapiauth.password');
 		//let auth = "Basic " + btoa(username + ":" + password);
 		// $.ajaxSetup({
@@ -59,7 +63,7 @@ function init(){
 
 		if(rest_url != false){
 			//populate with json data
-			$.getJSON(rest_url ,function(json){
+			$.getJSON(rest_url + '&username=' + username ,function(json){
 				content = '';
 				jQuery(json).each(function(index, kb){
 					content += '<div class="kbelement kbelement-snippet" tabindex="0">';
@@ -221,8 +225,7 @@ function copyPasteFile(element) {
 }
 
 function copyPasteSnippet(element) {
-	let rest_url = settings.get('kbsnippetapi.url')
-	if(typeof rest_url == 'undefined' || rest_url == '' ){
+	if( rest_url == false ){
 		console.log("No Rest URL defined.")
 		return;
 	}
@@ -230,7 +233,7 @@ function copyPasteSnippet(element) {
 	window.minimize();
 
 	let id = jQuery(element).find('.content').attr('data-id')
-	$.getJSON(rest_url + id,function(json){
+	$.getJSON(rest_url + id + '&username=' + username,function(json){
 		let content = json['content-unrendered'];
 		let promise = new Promise(function(resolve, reject) {
 			// do a thing, possibly async, then…
