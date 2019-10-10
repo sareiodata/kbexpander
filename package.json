@@ -1,9 +1,9 @@
 {
-  "name": "kbextender",
+  "name": "kbexpander",
   "version": "1.0.0",
   "license": "MIT",
   "description": "A simple text expander that reads files from a folder.",
-  "author": "Cristian Antohe",
+  "author": "Cristian Antohe <sareiodata@mailinator.com>",
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
@@ -26,14 +26,15 @@
   },
   "build": {
     "asar": false,
-    "productName": "kbextender",
-    "artifactName": "KBextender-${version}.${ext}",
-    "appId": "com.cozmoslabs.kbextender",
+    "productName": "kbexpander",
+    "artifactName": "kbexpander-${version}.${ext}",
+    "appId": "com.cozmoslabs.kbexpander",
     "linux": {
       "category": "Productivity",
       "icon": "build/assets/icon/png",
       "target": [
-        "AppImage"
+        "AppImage",
+        "deb"
       ]
     },
     "win": {

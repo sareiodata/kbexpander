@@ -223,7 +223,7 @@ function setNewSnipetLocation(){
 function setEditSnipetLocation(){
   let current_url = settings.get('kbsnippeteditapi.url')
   if(typeof current_url == 'undefined' || current_url == '' ){
-    current_url = 'http://wp.local/wp-admin/post.php?action=edit&post='
+    current_url = 'http://example.org/wp-admin/post.php?action=edit&post='
   }
 
   prompt({
